@@ -7,9 +7,11 @@ export class Service{
     buckets;
 
     constructor(){
-        this.client.setEndpoint(conf.appwriteUrl).setProject(conf.appwriteProjectId)
-        databases = new Databases(this.client)
-        buckets = new Storage(this.client)
+        this.client
+        .setEndpoint(conf.appwriteUrl)
+        .setProject(conf.appwriteProjectId)
+        this.databases = new Databases(this.client)
+        this.buckets = new Storage(this.client)
     }
 
     async createPost({title,slug,content,featuredImage,status,userId}){
