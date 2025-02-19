@@ -1,33 +1,37 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { login as authLogin } from '../store/authSlice'
-import { Button, Input, Logo } from './index'
-import { useDispatch } from 'react-redux'
 import authService from '../appwrite/auth'
+import { Link, useNavigate } from 'react-router-dom'
+import { login } from '../store/authSlice'
+import { Button, Input, Logo } from './index.js'
+import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 
 function Signup() {
-
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const [error, setError] = useState("");
-    const { register, handleSubmit } = useForm();
+    const navigate = useNavigate()
+    const [error, setError] = useState("")
+    const dispatch = useDispatch()
+    const { register, handleSubmit } = useForm()
 
     const create = async (data) => {
         setError("");
         try {
-            const userData = await authService.create(data)
+            console.log("Signup input data:", data);
+            // Create account using authService
+            const userData = await authService.createAccount(data);
             if (userData) {
-                const currentData = await authService.getCurrentUser();
-                if (currentData)
-                    dispatch(authLogin(currentData));
-                navigate("/");
+                // Fetch the current logged-in user
+                const currentUser = await authService.getCurrentUser();
+                if (currentUser) {
+                    dispatch(login(currentUser)); // Redux action for storing user info
+                    navigate("/"); // Redirect on successful signup
+                }
             }
         } catch (error) {
-            setError(error.message)
+            console.error("Signup Error:", error.message);
+            setError(error.message || "An error occurred during signup.");
         }
+    };
 
-    }
 
     return (
         <div className="flex items-center justify-center">
@@ -84,6 +88,7 @@ function Signup() {
                     </div>
                 </form>
             </div>
+
         </div>
     )
 }
